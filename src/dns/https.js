@@ -11,9 +11,12 @@ export default class DNSOverHTTPS extends BaseDNS {
 	}
 
 	async _lookup(hostname) {
-		const result = await dohQueryAsync({ url: this.dnsServer }, [
-			{ type: "AAAA", name: hostname },
+		let result = await dohQueryAsync({ url: this.dnsServer }, [
+			{ type: 'AAAA', name: hostname }
 		]);
+		if (result.answers.length === 0) {
+			result = await dohQueryAsync({ url: this.dnsServer }, [{ type: 'A', name: hostname }]);
+		}
 		return result.answers[result.answers.length - 1].data;
 	}
 }
